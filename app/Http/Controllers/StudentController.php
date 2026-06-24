@@ -7,16 +7,23 @@ use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
-    const PAGE_SIZE = 5;
+    private const PAGE_SIZE = 5;
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $student = Student::paginate(self::PAGE_SIZE);
-        validatePageNumber($student);
+        $students = Student::query()
+            ->select(['id', 'name', 'email', 'dob'])
+            ->orderBy('name')
+            ->paginate(self::PAGE_SIZE);
 
-        return view('students.index', compact('student'));
+        if ($students->currentPage() > $students->lastPage()) {
+            return redirect()->route('student.index');
+        }
+
+        return view('students.index', compact('students'));
     }
 
     /**
@@ -32,7 +39,15 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Student::create($request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:students,email'],
+            'dob' => ['required', 'date', 'before_or_equal:today'],
+        ]));
+
+        return redirect()
+            ->route('student.index')
+            ->with('success', 'Student created successfully.');
     }
 
     /**
@@ -48,7 +63,7 @@ class StudentController extends Controller
      */
     public function edit(Student $student)
     {
-        //
+        return view('students.edit', compact('student'));
     }
 
     /**
@@ -56,7 +71,15 @@ class StudentController extends Controller
      */
     public function update(Request $request, Student $student)
     {
-        //
+        $student->update($request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:students,email,'.$student->id],
+            'dob' => ['required', 'date', 'before_or_equal:today'],
+        ]));
+
+        return redirect()
+            ->route('student.index')
+            ->with('success', 'Student updated successfully.');
     }
 
     /**

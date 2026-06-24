@@ -7,17 +7,23 @@ use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
-    const PAGE_SIZE = 5;
+    private const PAGE_SIZE = 5;
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $courses = Course::select(['id','name','credits'])->paginate(self::PAGE_SIZE);
-        validatePageNumber($courses);   
+        $courses = Course::query()
+            ->select(['id', 'name', 'credits'])
+            ->orderBy('name')
+            ->paginate(self::PAGE_SIZE);
+
+        if ($courses->currentPage() > $courses->lastPage()) {
+            return redirect()->route('course.index');
+        }
 
         return view('courses.index', compact('courses'));
-
     }
 
     /**
@@ -33,7 +39,14 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-        
+        Course::create($request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'credits' => ['required', 'integer', 'min:1', 'max:30'],
+        ]));
+
+        return redirect()
+            ->route('course.index')
+            ->with('success', 'Course created successfully.');
     }
 
     /**
@@ -49,7 +62,7 @@ class CourseController extends Controller
      */
     public function edit(Course $course)
     {
-        //
+        return view('courses.edit', compact('course'));
     }
 
     /**
@@ -57,7 +70,14 @@ class CourseController extends Controller
      */
     public function update(Request $request, Course $course)
     {
-        //
+        $course->update($request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'credits' => ['required', 'integer', 'min:1', 'max:30'],
+        ]));
+
+        return redirect()
+            ->route('course.index')
+            ->with('success', 'Course updated successfully.');
     }
 
     /**

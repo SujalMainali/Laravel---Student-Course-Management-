@@ -2,16 +2,28 @@
 
 namespace App\Models;
 
+use Database\Factories\StudentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-use App\Models\Course;
-
 class Student extends Model
 {
-    /** @use HasFactory<\Database\Factories\StudentFactory> */
+    /** @use HasFactory<StudentFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'email',
+        'dob',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'dob' => 'date',
+        ];
+    }
 
     public function courses(): BelongsToMany
     {
@@ -19,5 +31,4 @@ class Student extends Model
             ->withPivot('enrolled_at')
             ->withTimestamps();
     }
-
 }
