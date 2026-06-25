@@ -46,10 +46,10 @@ class StudentController extends Controller
         if ($request->hasFile('profile_image')) {
             $validatedData['profile_image'] = $request->file('profile_image')->store('profile_images', 'public');
         }
-        Student::create($validatedData);
+        $student = Student::create($validatedData);
 
         return redirect()
-            ->route('student.index')
+            ->route('student.show', $student)
             ->with('success', 'Student created successfully.');
     }
 
@@ -91,7 +91,7 @@ class StudentController extends Controller
         $student->update($validatedData);
 
         return redirect()
-            ->route('student.index')
+            ->route('student.show', $student)
             ->with('success', 'Student updated successfully.');
     }
 
@@ -153,7 +153,7 @@ class StudentController extends Controller
         $student->courses()->sync($syncData->all());
 
         return redirect()
-            ->route('student.index', $student)
+            ->route('student.show', $student)
             ->with('success', 'Student courses updated successfully.');
     }
 }
