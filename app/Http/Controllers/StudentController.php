@@ -6,6 +6,7 @@ use App\Http\Requests\Student\CreateRequest;
 use App\Http\Requests\Student\UpdateCourseRequest;
 use App\Models\Course;
 use App\Models\Student;
+use Illuminate\Support\Facades\Storage;
 
 class StudentController extends Controller
 {
@@ -17,7 +18,7 @@ class StudentController extends Controller
     public function index()
     {
         $students = Student::query()
-            ->select(['id', 'name', 'email', 'dob'])
+            ->select(['id', 'name', 'email', 'dob', 'profile_image'])
             ->orderBy('id')
             ->paginate(self::PAGE_SIZE);
 
@@ -41,10 +42,14 @@ class StudentController extends Controller
      */
     public function store(CreateRequest $request)
     {
-        Student::create($request->validated());
+        $validatedData = $request->validated();
+        if ($request->hasFile('profile_image')) {
+            $validatedData['profile_image'] = $request->file('profile_image')->store('profile_images', 'public');
+        }
+        $student = Student::create($validatedData);
 
         return redirect()
-            ->route('student.index')
+            ->route('student.show', $student)
             ->with('success', 'Student created successfully.');
     }
 
@@ -53,7 +58,13 @@ class StudentController extends Controller
      */
     public function show(Student $student)
     {
-        //
+        $student->load([
+            'courses' => fn ($query) => $query
+                ->select('courses.id', 'courses.name', 'courses.credits')
+                ->orderBy('courses.name'),
+        ]);
+
+        return view('students.show', compact('student'));
     }
 
     /**
@@ -69,10 +80,18 @@ class StudentController extends Controller
      */
     public function update(CreateRequest $request, Student $student)
     {
-        $student->update($request->validated());
+        $validatedData = $request->validated();
+        if ($request->hasFile('profile_image')) {
+            $validatedData['profile_image'] = $request->file('profile_image')->store('profile_images', 'public');
+        }
+
+        if ($student->profile_image && $request->hasFile('profile_image')) {
+            Storage::disk('public')->delete($student->profile_image);
+        }
+        $student->update($validatedData);
 
         return redirect()
-            ->route('student.index')
+            ->route('student.show', $student)
             ->with('success', 'Student updated successfully.');
     }
 
@@ -81,6 +100,9 @@ class StudentController extends Controller
      */
     public function destroy(Student $student)
     {
+        if ($student->profile_image) {
+            Storage::disk('public')->delete($student->profile_image);
+        }
         $student->delete();
 
         return redirect()
@@ -131,7 +153,7 @@ class StudentController extends Controller
         $student->courses()->sync($syncData->all());
 
         return redirect()
-            ->route('student.index', $student)
+            ->route('student.show', $student)
             ->with('success', 'Student courses updated successfully.');
     }
 }

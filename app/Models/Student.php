@@ -16,6 +16,7 @@ class Student extends Model
         'name',
         'email',
         'dob',
+        'profile_image',
     ];
 
     protected function casts(): array
