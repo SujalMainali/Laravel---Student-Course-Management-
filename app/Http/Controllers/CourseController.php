@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Storage;
-
 use App\Http\Requests\Course\CreateRequest;
 use App\Models\Course;
 
@@ -68,9 +66,41 @@ class CourseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Course $course)
+    public function show(int $course)
     {
-        return view('courses.show', compact('course'));
+        $course = Course::query()
+            ->select([
+                'id',
+                'name',
+                'credits',
+                'created_at',
+            ])
+            ->with([
+                'courseDocuments' => fn ($query) => $query
+                    ->select([
+                        'id',
+                        'course_id',
+                        'path',
+                        'original_name',
+                        'created_at',
+                    ])
+                    ->orderBy('original_name'),
+            ])
+            ->findOrFail($course);
+
+        $students = $course->students()
+            ->select([
+                'students.id',
+                'students.name',
+            ])
+            ->orderBy('students.name')
+            ->paginate(self::PAGE_SIZE, pageName: 'students_page');
+
+        if ($students->currentPage() > $students->lastPage()) {
+            return redirect()->route('course.show', $course);
+        }
+
+        return view('courses.show', compact('course', 'students'));
     }
 
     /**

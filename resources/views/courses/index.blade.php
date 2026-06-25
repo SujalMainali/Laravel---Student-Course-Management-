@@ -22,6 +22,7 @@
                 :title="$course->name"
                 :subtitle="'Course #'.$course->id"
                 :edit-url="route('course.edit', $course)"
+                :view-url="route('course.show', $course)"
             >
                 <x-slot:meta>
                     <span class="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
