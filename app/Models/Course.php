@@ -6,6 +6,9 @@ use Database\Factories\CourseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+use App\Models\CourseDocument;
 
 class Course extends Model
 {
@@ -22,5 +25,10 @@ class Course extends Model
         return $this->belongsToMany(Student::class)
             ->withPivot('enrolled_at')
             ->withTimestamps();
+    }
+
+    public function courseDocuments(): HasMany
+    {
+        return $this->hasMany(CourseDocument::class);
     }
 }

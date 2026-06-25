@@ -25,7 +25,7 @@
                 :view-url="route('student.show', $student)"
             >
                 <x-slot:leading>
-                    <x-student-avatar :student="$student" size="sm" />
+                    <x-student-avatar :profileImage="$student->profile_image" size="sm" />
                 </x-slot:leading>
 
                 <x-slot:meta>

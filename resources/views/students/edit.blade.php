@@ -8,7 +8,7 @@
 
         <div class="mt-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
             <div class="mb-6 flex justify-center sm:justify-start">
-                <x-student-avatar :student="$student" size="lg" />
+                <x-student-avatar :profileImage="$student->profile_image" size="lg" />
             </div>
 
             <div class="border-b border-slate-100 pb-6">
