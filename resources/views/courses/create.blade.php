@@ -13,7 +13,7 @@
                 <p class="mt-2 text-sm leading-6 text-slate-600">Add the name and credit value. You can edit both later.</p>
             </div>
 
-            <form action="{{ route('course.store') }}" method="POST" class="pt-7">
+            <form action="{{ route('course.store') }}" method="POST" enctype="multipart/form-data" class="pt-7">
                 @include('courses._form', ['course' => new \App\Models\Course()])
             </form>
         </div>

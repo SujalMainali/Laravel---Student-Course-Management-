@@ -15,7 +15,7 @@ class CourseDocument extends Model
 
     protected $fillable = [
         'path',
-        'course_id'
+        'original_name',
     ];
 
     public function course(): BelongsTo

@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('course_documents', function (Blueprint $table) {
             $table->id();
-            $table->string('path');
             $table->foreignId('course_id')->required()->constrained('courses')->onDelete('cascade');
+            $table->string('path');
+            $table->string('original_name');
             $table->timestamps();
         });
     }

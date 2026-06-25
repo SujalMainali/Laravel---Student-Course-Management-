@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Storage;
+
 use App\Http\Requests\Course\CreateRequest;
 use App\Models\Course;
 
@@ -39,10 +41,27 @@ class CourseController extends Controller
      */
     public function store(CreateRequest $request)
     {
-        Course::create($request->validated());
+        $validated = $request->validated();
+
+        $course = Course::create([
+            'name' => $validated['name'],
+            'credits' => $validated['credits'],
+        ]);
+
+        if ($request->hasFile('documents')) {
+            $documents = collect($request->file('documents'))
+                ->map(function ($document) {
+                    return [
+                        'path' => $document->store('course_documents', 'public'),
+                        'original_name' => $document->getClientOriginalName(),
+                    ];
+                });
+
+            $course->courseDocuments()->createMany($documents->all());
+        }
 
         return redirect()
-            ->route('course.index')
+            ->route('course.show', $course)
             ->with('success', 'Course created successfully.');
     }
 
@@ -51,7 +70,7 @@ class CourseController extends Controller
      */
     public function show(Course $course)
     {
-        //
+        return view('courses.show', compact('course'));
     }
 
     /**
@@ -67,10 +86,27 @@ class CourseController extends Controller
      */
     public function update(CreateRequest $request, Course $course)
     {
-        $course->update($request->validated());
+        $validated = $request->validated();
+
+        $course->update([
+            'name' => $validated['name'],
+            'credits' => $validated['credits'],
+        ]);
+
+        if ($request->hasFile('documents')) {
+            $documents = collect($request->file('documents'))
+                ->map(function ($document) {
+                    return [
+                        'path' => $document->store('course_documents', 'public'),
+                        'original_name' => $document->getClientOriginalName(),
+                    ];
+                });
+
+            $course->courseDocuments()->createMany($documents->all());
+        }
 
         return redirect()
-            ->route('course.index')
+            ->route('course.show', $course)
             ->with('success', 'Course updated successfully.');
     }
 

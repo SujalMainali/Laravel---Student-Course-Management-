@@ -13,7 +13,7 @@
                 <p class="mt-2 text-sm leading-6 text-slate-600">Update the details below and save when you are ready.</p>
             </div>
 
-            <form action="{{ route('course.update', $course) }}" method="POST" class="pt-7">
+            <form action="{{ route('course.update', $course) }}" method="POST" enctype="multipart/form-data" class="pt-7">
                 @include('courses._form')
             </form>
 
