@@ -12,11 +12,11 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function (): void {
-            Route::middleware('web')
+            Route::middleware(['web', 'auth'])
                 ->name('course.')
                 ->group(base_path('routes/course.php'));
 
-            Route::middleware('web')
+            Route::middleware(['web', 'auth'])
                 ->name('student.')
                 ->group(base_path('routes/student.php'));
 
@@ -24,11 +24,16 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->name('auth.')
                 ->prefix('auth')
                 ->group(base_path('routes/auth.php'));
-
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->redirectGuestsTo(
+            fn (Request $request) => route('auth.login')
+        );
+
+        $middleware->redirectUsersTo(
+            fn (Request $request) => route('manage')
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

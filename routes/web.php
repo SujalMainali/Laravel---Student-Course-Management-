@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -8,4 +9,8 @@ Route::get('/', function () {
 
 Route::get('/manage', function () {
     return view('manage');
-})->name('manage');
+})->middleware(['web', 'auth'])->name('manage');
+
+Route::get('/me', [ProfileController::class, 'show'])
+    ->middleware(['web', 'auth'])
+    ->name('me.show');
