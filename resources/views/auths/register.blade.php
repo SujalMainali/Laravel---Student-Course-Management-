@@ -1,0 +1,115 @@
+@extends('layouts.app')
+
+@section('title', 'Register | Manage')
+
+@section('content')
+    <section class="mx-auto grid min-h-[58vh] max-w-5xl items-center gap-10 lg:grid-cols-[1fr_0.9fr]">
+        <div>
+            <a href="{{ route('manage') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 transition hover:text-indigo-700">
+                <span aria-hidden="true">&larr;</span>
+                Back to Manage
+            </a>
+
+            <div class="mt-6">
+                <p class="text-sm font-semibold uppercase tracking-[0.25em] text-indigo-600">Start organized</p>
+                <h1 class="mt-3 text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
+                    Create your Manage account.
+                </h1>
+                <p class="mt-5 max-w-xl text-base leading-7 text-slate-600">
+                    Set up your account and jump straight into managing students, courses, enrollments, and documents.
+                </p>
+            </div>
+        </div>
+
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/70 sm:p-8">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-950">Register</h2>
+                <p class="mt-2 text-sm text-slate-500">
+                    Use a valid email and a password with at least 8 characters.
+                </p>
+            </div>
+
+            <form method="POST" action="{{ route('auth.register.submit') }}" class="space-y-5">
+                @csrf
+
+                <div>
+                    <label for="name" class="block text-sm font-semibold text-slate-700">Name</label>
+                    <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        value="{{ old('name') }}"
+                        autocomplete="name"
+                        required
+                        autofocus
+                        class="mt-2 block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 @error('name') border-rose-300 focus:border-rose-500 focus:ring-rose-100 @enderror"
+                        placeholder="Your name"
+                    >
+                    @error('name')
+                        <p class="mt-2 text-sm font-medium text-rose-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-semibold text-slate-700">Email address</label>
+                    <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        value="{{ old('email') }}"
+                        autocomplete="email"
+                        required
+                        class="mt-2 block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 @error('email') border-rose-300 focus:border-rose-500 focus:ring-rose-100 @enderror"
+                        placeholder="you@example.com"
+                    >
+                    @error('email')
+                        <p class="mt-2 text-sm font-medium text-rose-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-semibold text-slate-700">Password</label>
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        autocomplete="new-password"
+                        required
+                        class="mt-2 block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 @error('password') border-rose-300 focus:border-rose-500 focus:ring-rose-100 @enderror"
+                        placeholder="At least 8 characters"
+                    >
+                    @error('password')
+                        <p class="mt-2 text-sm font-medium text-rose-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="password_confirmation" class="block text-sm font-semibold text-slate-700">Confirm password</label>
+                    <input
+                        id="password_confirmation"
+                        name="password_confirmation"
+                        type="password"
+                        autocomplete="new-password"
+                        required
+                        class="mt-2 block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100"
+                        placeholder="Repeat your password"
+                    >
+                </div>
+
+                <button
+                    type="submit"
+                    class="inline-flex w-full items-center justify-center rounded-2xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5 hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-200"
+                >
+                    Create account
+                </button>
+            </form>
+
+            <p class="mt-7 text-center text-sm text-slate-600">
+                Already have an account?
+                <a href="{{ route('auth.login') }}" class="font-bold text-indigo-600 transition hover:text-indigo-700">
+                    Sign in
+                </a>
+            </p>
+        </div>
+    </section>
+@endsection
