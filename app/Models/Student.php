@@ -20,6 +20,11 @@ class Student extends Model
         'profile_image',
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
     protected function casts(): array
     {
         return [

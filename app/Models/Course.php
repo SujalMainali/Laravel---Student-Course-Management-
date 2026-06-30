@@ -10,15 +10,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 use App\Models\CourseDocument;
 
+#[Fillable(['name', 'credits'])]
+#[Hidden(['created_at', 'updated_at'])]
+#[Visible(['id', 'name', 'credits'])]
+
 class Course extends Model
 {
     /** @use HasFactory<CourseFactory> */
     use HasFactory;
-
-    protected $fillable = [
-        'name',
-        'credits',
-    ];
 
     public function students(): BelongsToMany
     {
