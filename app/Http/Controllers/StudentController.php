@@ -7,6 +7,7 @@ use App\Http\Requests\Student\UpdateCourseRequest;
 use App\Models\Course;
 use App\Models\Student;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Gate;
 
 class StudentController extends Controller
 {
@@ -17,6 +18,7 @@ class StudentController extends Controller
      */
     public function index()
     {
+        Gate::authorize('viewAny', Student::class);
         $students = Student::query()
             ->select(['id', 'name', 'email', 'dob', 'profile_image'])
             ->orderBy('id')
@@ -41,6 +43,7 @@ class StudentController extends Controller
      */
     public function create()
     {
+        Gate::authorize('create', Student::class);
         return view('students.create');
     }
 
@@ -93,6 +96,7 @@ class StudentController extends Controller
      */
     public function edit(Student $student)
     {
+        Gate::authorize('update', $student);
         return view('students.edit', compact('student'));
     }
 
@@ -128,6 +132,8 @@ class StudentController extends Controller
      */
     public function destroy(Student $student)
     {
+        Gate::authorize('delete', $student);
+
         if ($student->profile_image) {
             Storage::disk('public')->delete($student->profile_image);
         }
@@ -149,6 +155,7 @@ class StudentController extends Controller
      */
     public function courses(Student $student)
     {
+        Gate::authorize('view', $student);
         $courses = Course::query()
             ->select(['id', 'name', 'credits'])
             ->orderBy('name')
@@ -166,6 +173,7 @@ class StudentController extends Controller
      */
     public function updateCourses(UpdateCourseRequest $request, Student $student)
     {
+        Gate::authorize('update', $student);
         $selectedCourseIds = collect($request->validated('courses', []))
             ->map(fn ($courseId) => (int) $courseId)
             ->unique()
