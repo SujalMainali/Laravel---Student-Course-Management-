@@ -29,7 +29,7 @@
                 </p>
             </div>
 
-            <form method="POST" action="{{ route('auth.register.submit') }}" class="space-y-5">
+            <form method="POST" action="{{ route('auth.register.submit') }}" enctype="multipart/form-data" class="space-y-5">
                 @csrf
 
                 <div>
@@ -94,6 +94,21 @@
                         class="mt-2 block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100"
                         placeholder="Repeat your password"
                     >
+                </div>
+
+                <div>
+                    <label for="profile_image" class="block text-sm font-semibold text-slate-700">Profile image</label>
+                    <input
+                        id="profile_image"
+                        name="profile_image"
+                        type="file"
+                        accept="image/jpeg,image/png,image/jpg,image/webp"
+                        class="mt-2 block w-full cursor-pointer rounded-2xl border border-dashed border-indigo-200 bg-indigo-50/60 px-4 py-3 text-sm text-slate-600 shadow-sm outline-none transition file:mr-6 file:cursor-pointer file:rounded-xl file:border-0 file:bg-indigo-600 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white hover:border-indigo-300 hover:bg-indigo-50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 @error('profile_image') border-rose-300 focus:border-rose-500 focus:ring-rose-100 @enderror"
+                    >
+                    <p class="mt-2 text-xs font-medium text-slate-500">Optional. JPG, PNG, or WEBP up to 2MB.</p>
+                    @error('profile_image')
+                        <p class="mt-2 text-sm font-medium text-rose-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <button
