@@ -26,6 +26,13 @@ class StudentController extends Controller
             return redirect()->route('student.index');
         }
 
+        if(request()->expectsJson()) {
+            return response()->json([
+                'message' => 'Students retrieved successfully.',
+                'data' => $students,
+            ]);
+        }
+
         return view('students.index', compact('students'));
     }
 
@@ -48,6 +55,13 @@ class StudentController extends Controller
         }
         $student = Student::create($validatedData);
 
+        if($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Student created successfully.',
+                'data' => $student,
+            ]);
+        }
+
         return redirect()
             ->route('student.show', $student)
             ->with('success', 'Student created successfully.');
@@ -63,6 +77,13 @@ class StudentController extends Controller
                 ->select('courses.id', 'courses.name', 'courses.credits')
                 ->orderBy('courses.name'),
         ]);
+
+        if(request()->expectsJson()) {
+            return response()->json([
+                'message' => 'Student retrieved successfully.',
+                'data' => $student,
+            ]);
+        }
 
         return view('students.show', compact('student'));
     }
@@ -90,6 +111,13 @@ class StudentController extends Controller
         }
         $student->update($validatedData);
 
+        if($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Student updated successfully.',
+                'data' => $student,
+            ]);
+        }
+
         return redirect()
             ->route('student.show', $student)
             ->with('success', 'Student updated successfully.');
@@ -105,6 +133,12 @@ class StudentController extends Controller
         }
         $student->delete();
 
+        if(request()->expectsJson()) {
+            return response()->json([
+                'message' => 'Student deleted successfully.',
+            ]);
+        }
+            
         return redirect()
             ->route('student.index')
             ->with('success', 'Student deleted successfully.');

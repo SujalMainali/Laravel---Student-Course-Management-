@@ -23,6 +23,13 @@ class CourseController extends Controller
             return redirect()->route('course.index');
         }
 
+        if(request()->expectsJson()) {
+            return response()->json([
+                'message' => 'Courses retrieved successfully.',
+                'data' => $courses,
+            ]);
+        }
+
         return view('courses.index', compact('courses'));
     }
 
@@ -56,6 +63,13 @@ class CourseController extends Controller
                 });
 
             $course->courseDocuments()->createMany($documents->all());
+        }
+
+        if($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Course created successfully.',
+                'data' => $course->load('courseDocuments'),
+            ]);
         }
 
         return redirect()
@@ -100,6 +114,13 @@ class CourseController extends Controller
             return redirect()->route('course.show', $course);
         }
 
+        if(request()->expectsJson()) {
+            return response()->json([
+                'message' => 'Course retrieved successfully.',
+                'data' => $course->load('courseDocuments'),
+            ]);
+        }
+
         return view('courses.show', compact('course', 'students'));
     }
 
@@ -135,6 +156,13 @@ class CourseController extends Controller
             $course->courseDocuments()->createMany($documents->all());
         }
 
+        if($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Course updated successfully.',
+                'data' => $course->load('courseDocuments'),
+            ]);
+        }
+
         return redirect()
             ->route('course.show', $course)
             ->with('success', 'Course updated successfully.');
@@ -146,6 +174,12 @@ class CourseController extends Controller
     public function destroy(Course $course)
     {
         $course->delete();
+
+        if(request()->expectsJson()) {
+            return response()->json([
+                'message' => 'Course deleted successfully.',
+            ]);
+        }
 
         return redirect()
             ->route('course.index')
