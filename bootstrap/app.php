@@ -35,6 +35,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectUsersTo(
             fn (Request $request) => route('manage')
         );
+
+        $middleware->alias([
+            'api_token_auth' => App\Http\Middleware\ApiTokenAuth::class,
+            'role' => App\Http\Middleware\RoleMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

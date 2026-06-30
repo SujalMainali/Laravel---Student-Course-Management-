@@ -1,0 +1,31 @@
+<?php
+
+use Illuminate\Http\Request;
+
+use App\Http\Controllers\ApiController;
+
+use App\Http\Controllers\CourseController;
+
+Route::post('/login', [ApiController::class, 'login']);
+Route::middleware('api_token_auth')->group(function () {
+
+    Route::middleware('role:admin')->post('/courses', [CourseController::class, 'store'])->name('store');
+    Route::middleware('role:admin')->put('/courses/{course}', [CourseController::class, 'update'])->name('update');
+    Route::middleware('role:admin')->delete('/courses/{course}', [CourseController::class, 'destroy'])->name('destroy');
+
+    Route::middleware('role:admin')->delete('/students/{student}', [StudentController::class, 'destroy'])->name('destroy');
+    Route::middleware('role:admin,staff')->put('/students/{student}', [StudentController::class, 'update'])->name('update');
+    Route::middleware('role:admin,staff')->post('/students', [StudentController::class, 'store'])->name('store');
+
+    Route::get('/user', function (Request $request) {
+        return response()->json([
+            'user' => [
+                'id' => $request->user()->id,
+                'name' => $request->user()->name,
+                'email' => $request->user()->email,
+                'role' => $request->user()->role ?? null,
+            ],
+        ]);
+    });
+    
+});
