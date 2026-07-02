@@ -52,9 +52,8 @@ class User extends Authenticatable
         return $this->role === self::ROLE_USER;
     }
 
-    public function profileImage(): HasOne
-    {
-        return $this->hasOne(ProfileImage::class);
+    public function image() {
+        return $this->morphOne(Image::class, 'imageable');
     }
 
     public function student(): HasOne
