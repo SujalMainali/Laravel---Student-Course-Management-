@@ -18,6 +18,11 @@ class CourseResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'credits' => $this->credits,
+            'course_documents' => CourseDocumentResource::collection($this->whenLoaded('courseDocuments')),
+            'students' => StudentResource::collection($this->whenLoaded('students')),
+            'image' => $this->whenLoaded('image', function () {
+                return $this->image ? $this->image->image_path : null;
+            }),
         ];
     }
 }

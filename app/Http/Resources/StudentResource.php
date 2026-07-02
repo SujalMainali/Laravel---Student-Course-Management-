@@ -19,7 +19,13 @@ class StudentResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'dob' => $this->dob,
-            'profile_image' => $this->profile_image,
+            'user' => $this->whenLoaded('user', function () {
+                return $this->user ? [
+                    'id' => $this->user->id,
+                    'image'=> ['image_path' => $this->user->relationLoaded('image') ? $this->user->image->image_path : null],
+                ] : null;
+            }),
+            'courses' => CourseResource::collection($this->whenLoaded('courses')),
         ];
     }
 }

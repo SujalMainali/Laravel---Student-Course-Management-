@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Course\CreateRequest;
 use App\Models\Course;
+use App\Http\Resources\CourseResource;
 
 class CourseController extends Controller
 {
@@ -24,10 +25,14 @@ class CourseController extends Controller
         }
 
         if(request()->expectsJson()) {
-            return response()->json([
-                'message' => 'Courses retrieved successfully.',
-                'data' => $courses,
-            ]);
+            // return response()->json([
+            //     'message' => 'Courses retrieved successfully.',
+            //     'data' => $courses,
+            // ], 200);
+            return CourseResource::collection($courses)
+                ->additional([
+                    'message' => 'Courses retrieved successfully.',
+                ]);
         }
 
         return view('courses.index', compact('courses'));
@@ -68,8 +73,8 @@ class CourseController extends Controller
         if($request->expectsJson()) {
             return response()->json([
                 'message' => 'Course created successfully.',
-                'data' => $course->load('courseDocuments'),
-            ]);
+                'data' => new CourseResource($course->load('courseDocuments')),
+            ], 201);
         }
 
         return redirect()
@@ -116,9 +121,9 @@ class CourseController extends Controller
 
         if(request()->expectsJson()) {
             return response()->json([
-                'message' => 'Course retrieved successfully.',
-                'data' => $course->load('courseDocuments'),
-            ]);
+                'message' => 'Course retrieved sucessfully.',
+                'data' => new CourseResource($course),
+            ], 200);                
         }
 
         return view('courses.show', compact('course', 'students'));
@@ -159,8 +164,8 @@ class CourseController extends Controller
         if($request->expectsJson()) {
             return response()->json([
                 'message' => 'Course updated successfully.',
-                'data' => $course->load('courseDocuments'),
-            ]);
+                'data' => new CourseResource($course->load('courseDocuments')),
+            ], 200);
         }
 
         return redirect()
@@ -176,9 +181,7 @@ class CourseController extends Controller
         $course->delete();
 
         if(request()->expectsJson()) {
-            return response()->json([
-                'message' => 'Course deleted successfully.',
-            ]);
+            return response()->noContent();
         }
 
         return redirect()

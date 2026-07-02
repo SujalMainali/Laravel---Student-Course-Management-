@@ -6,6 +6,7 @@ use App\Http\Requests\Student\CreateRequest;
 use App\Http\Requests\Student\UpdateCourseRequest;
 use App\Models\Course;
 use App\Models\Student;
+use App\Http\Resources\StudentResource;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Gate;
 
@@ -20,8 +21,13 @@ class StudentController extends Controller
     {
         Gate::authorize('viewAny', Student::class);
         $students = Student::query()
-            ->select(['id', 'name', 'email', 'dob', 'profile_image'])
+            ->select(['id', 'name', 'email', 'dob'])
             ->orderBy('id')
+            ->with([
+                'user' => fn ($query) => $query
+                    ->select('id', 'name', 'email')
+                    ->with(['image' => fn ($query) => $query->select('id', 'image_path', 'imageable_id')]),
+            ])
             ->paginate(self::PAGE_SIZE);
 
         if ($students->currentPage() > $students->lastPage()) {
@@ -31,8 +37,8 @@ class StudentController extends Controller
         if(request()->expectsJson()) {
             return response()->json([
                 'message' => 'Students retrieved successfully.',
-                'data' => $students,
-            ]);
+                'data' => StudentResource::collection($students),
+            ], 200);
         }
 
         return view('students.index', compact('students'));
@@ -71,8 +77,8 @@ class StudentController extends Controller
         if($request->expectsJson()) {
             return response()->json([
                 'message' => 'Student created successfully.',
-                'data' => $student,
-            ]);
+                'data' => new StudentResource($student),
+            ], 201);
         }
 
         return redirect()
@@ -89,13 +95,16 @@ class StudentController extends Controller
             'courses' => fn ($query) => $query
                 ->select('courses.id', 'courses.name', 'courses.credits')
                 ->orderBy('courses.name'),
+            'user' => fn ($query) => $query
+                ->select('id', 'name', 'email')
+                ->with(['image' => fn ($query) => $query->select('id', 'image_path', 'imageable_id')]),
         ]);
 
         if(request()->expectsJson()) {
             return response()->json([
                 'message' => 'Student retrieved successfully.',
-                'data' => $student,
-            ]);
+                'data' => new StudentResource($student),
+            ], 200);
         }
 
         return view('students.show', compact('student'));
@@ -134,8 +143,8 @@ class StudentController extends Controller
         if($request->expectsJson()) {
             return response()->json([
                 'message' => 'Student updated successfully.',
-                'data' => $student,
-            ]);
+                'data' => new StudentResource($student),
+            ], 200);
         }
 
         return redirect()
@@ -156,9 +165,7 @@ class StudentController extends Controller
         $student->delete();
 
         if(request()->expectsJson()) {
-            return response()->json([
-                'message' => 'Student deleted successfully.',
-            ]);
+            return response()->noContent();
         }
             
         return redirect()
